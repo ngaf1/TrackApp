@@ -6,58 +6,63 @@ import javax.persistence.*;
 @Table(name = "applications")
 public class Application {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="application_id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="application_id")
+	private Long id;
 
-    @Column(name = "app_name", nullable = false)
-    private String name;
+	@Column(name = "app_name", nullable = false)
+	private String name;
 
-    @Column(length = 2000)
-    private String description;
-    private String owner;
+	@Column(length = 2000)
+	private String description;
+	private String owner;
+	
+	public Application() {}
 
-    public Long getId() {
-        return id;
-    }
+	public Application(Long id, String name, String description, String owner) {
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getOwner() {
-        return owner;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
+	public String getOwner() {
+		return owner;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 
-    public void setDescription(String description) {
+	public String getDescription() {
+		return description;
+	}
 
-        this.description = description;
-    }
+	public void setDescription(String description) {
 
-    @Override
-    public String toString() {
-        return "Application{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", owner=" + owner +
-                ", description='" + description + '\'' +
-                '}';
-    }
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return "Application{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", owner=" + owner +
+				", description='" + description + '\'' +
+				'}';
+	}
 }
