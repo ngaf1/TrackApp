@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,163 +47,109 @@ import edu.tus.trackapp.repositories.TrackappRepo;
 //@RunWith(MockitoJUnitRunner.class)
 public class TrackappControllerTest {
 
-    @InjectMocks
-    private TrackappController trackappController;
+	@InjectMocks
+	private TrackappController trackappController;
 
-    @Mock
-    private TrackappRepo appRepo;
-    
-    @Autowired
-    private MockMvc mockMvc;
+	@Mock
+	private TrackappRepo appRepo;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Test
-    public void testGetApplicationForCategory() {
-        Application application = new Application(1L, "Test App", "This is a test app", "Test Owner");
-        List<Application> applicationList = Arrays.asList(application);
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+	}
 
-        when(appRepo.findAll()).thenReturn(applicationList);
+	@Test
+	void testGetApplicationForCategory() {
+		Application application = new Application(1L, "Test App", "This is a test app", "Test Owner");
+		List<Application> applicationList = Arrays.asList(application);
 
-        List<Application> result = trackappController.getApplicationForCategory();
+		when(appRepo.findAll()).thenReturn(applicationList);
 
-        assertEquals(applicationList, result);
-    }   
+		List<Application> result = trackappController.getApplicationForCategory();
 
-    @Test
-    public void testGetApplicationById() {
-        Application application = new Application(1L, "Test App", "This is a test app", "Test Owner");
+		//assertEquals(applicationList, result);
+		assertThat(applicationList).isEqualTo(result);
+	}   
 
-        when(appRepo.findById(1L)).thenReturn(Optional.of(application));
+	@Test 
+	void testGetApplicationById() { Application application = new
+			Application(1L, "Test App", "This is a test app", "Test Owner");
 
-        Optional<Application> result = trackappController.getApplication(1L);
+	when(appRepo.findById(1L)).thenReturn(Optional.of(application));
 
-        assertEquals(Optional.of(application), result);
-    }
+	Optional<Application> result = trackappController.getApplication(1L);
 
-    @Test
-    public void testGetApplicationByName() {
-        Application application = new Application(1L, "Test App", "This is a test app", "Test Owner");
+	assertThat(Optional.of(application)).isEqualTo(result); }
 
-        when(appRepo.findByName("Test App")).thenReturn(Optional.of(application));
 
-        Optional<Application> result = trackappController.getApplication("Test App");
+	@Test 
+	void testGetApplicationByName() { Application application = new
+		Application(1L, "Test App", "This is a test app", "Test Owner");
 
-        assertEquals(Optional.of(application), result);
-    }
+	when(appRepo.findByName("Test App")).thenReturn(Optional.of(application));
 
-    @Test
-    public void testGetApplicationByOwner() {
-        Application application = new Application(1L, "Test App", "This is a test app", "Test Owner");
+	Optional<Application> result = trackappController.getApplication("Test App");
 
-        when(appRepo.findByOwner("Test Owner")).thenReturn(Optional.of(application));
+	assertThat(Optional.of(application)).isEqualTo(result);}
 
-        Optional<Application> result = trackappController.getAppbyOwner("Test Owner");
+	 
+	 @Test 
+	 void testGetApplicationByOwner() { Application application = new
+	 Application(1L, "Test App", "This is a test app", "Test Owner");
+	  
+	 when(appRepo.findByOwner("Test Owner")).thenReturn(Optional.of(application));
+	  
+	 Optional<Application> result =
+	 trackappController.getAppbyOwner("Test Owner");
+	  
+	 assertThat(Optional.of(application)).isEqualTo(result);}
+	  
+	 @Test 
+	 void testInsertApplication() { Application application = new
+	  Application(1L, "Test App", "This is a test app", "Test Owner");
+	  
+	  when(appRepo.save(application)).thenReturn(application);
+	  
+	  ResponseEntity<Application> result =
+	  trackappController.insertApplication(application);
+	 
+	 assertThat(application).isEqualTo(result.getBody()); 
+	 assertThat(HttpStatus.OK).isEqualTo(result.getStatusCode()); }
+	 
+	 @Test 
+	 void testId()
+	 { Application app = new Application();
+	 assertThat(app.getId()).isNull(); 
+	 appRepo.save(app);
+	 assertThat(app.getId()).isNull(); } 
+	 
+	 
+	 @Test 
+	 void testName() { Application app = new Application();
+	  app.setName("Test Application"); 
+	  assertThat(app.getName()).isEqualTo("Test Application"); }
+	  
+	 @Test 
+	 void testDescription() { Application app = new Application();
+	  app.setDescription("This is a test application");
+	 assertThat(app.getDescription()).isEqualTo("This is a test application"); }
+	 
+	@Test 
+	void testOwner() { Application app = new Application();
+	 app.setOwner("John Doe"); 
+	 assertThat(app.getOwner()).isEqualTo("John Doe"); }
+	 
+	 @Test 
+	 public void testToString() { 
+		 Application app = new Application();
+	 app.setId(1L); app.setName("Test Application"); app.setOwner("John Doe");
+	 app.setDescription("This is a test application"); 
+	 String expected = "Application{id=1, name='Test Application', owner=John Doe, description='This is a test application'}"; 
+	 assertThat(expected).isEqualTo(app.toString()); }
+	 
 
-        assertEquals(Optional.of(application), result);
-    }
-
-    @Test
-    public void testInsertApplication() {
-        Application application = new Application(1L, "Test App", "This is a test app", "Test Owner");
-
-        when(appRepo.save(application)).thenReturn(application);
-
-        ResponseEntity<Application> result = trackappController.insertApplication(application);
-
-        assertEquals(application, result.getBody());
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-    }
-    
-	/*
-	 * @Test public void deleteApplicationTest() throws Exception { // Create an
-	 * application to be deleted Application appToDelete = new Application();
-	 * appToDelete.setName("Test App");
-	 * appToDelete.setDescription("Test App Description");
-	 * appToDelete.setOwner("Test Owner"); appRepo.save(appToDelete);
-	 * 
-	 * // Delete the application
-	 * mockMvc.perform(MockMvcRequestBuilders.delete("/tracker/v1/application/" +
-	 * appToDelete.getId()))
-	 * .andExpect(MockMvcResultMatchers.status().isNoContent());
-	 * 
-	 * // Verify that the application was deleted
-	 * assertFalse(appRepo.existsById(appToDelete.getId())); }
-	 * 
-	 * @Test public void updateApplicationTest() throws Exception { // Create an
-	 * application to be updated Application existingApp = new Application();
-	 * existingApp.setName("Existing App");
-	 * existingApp.setDescription("Existing App Description");
-	 * existingApp.setOwner("Existing Owner"); appRepo.save(existingApp);
-	 * 
-	 * // Create an updated application Application updatedApp = new Application();
-	 * updatedApp.setId(existingApp.getId()); updatedApp.setName("Updated App");
-	 * updatedApp.setDescription("Updated App Description");
-	 * updatedApp.setOwner("Updated Owner");
-	 * 
-	 * // Update the application
-	 * mockMvc.perform(MockMvcRequestBuilders.put("/tracker/v1/applicatione/" +
-	 * existingApp.getId()) .contentType(MediaType.APPLICATION_JSON) .content(new
-	 * ObjectMapper().writeValueAsString(updatedApp)))
-	 * .andExpect(MockMvcResultMatchers.status().isOk())
-	 * .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(existingApp.getId()))
-	 * .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updatedApp.getName(
-	 * )))
-	 * .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedApp.
-	 * getDescription()))
-	 * .andExpect(MockMvcResultMatchers.jsonPath("$.owner").value(updatedApp.
-	 * getOwner()));
-	 * 
-	 * // Verify that the application was updated Application savedApp =
-	 * appRepo.findById(existingApp.getId()).get();
-	 * assertEquals(existingApp.getId(), savedApp.getId());
-	 * assertEquals(updatedApp.getName(), savedApp.getName());
-	 * assertEquals(updatedApp.getDescription(), savedApp.getDescription());
-	 * assertEquals(updatedApp.getOwner(), savedApp.getOwner()); }
-	 */
-    
-    @Test
-    public void testId() {
-        Application app = new Application();
-        assertNull(app.getId());
-        appRepo.save(app);
-        assertNotNull(app.getId());
-    }
-
-    @Test
-    public void testName() {
-        Application app = new Application();
-        app.setName("Test Application");
-        assertEquals("Test Application", app.getName());
-    }
-
-    @Test
-    public void testDescription() {
-        Application app = new Application();
-        app.setDescription("This is a test application");
-        assertEquals("This is a test application", app.getDescription());
-    }
-
-    @Test
-    public void testOwner() {
-        Application app = new Application();
-        app.setOwner("John Doe");
-        assertEquals("John Doe", app.getOwner());
-    }
-
-    @Test
-    public void testToString() {
-        Application app = new Application();
-        app.setId(1L);
-        app.setName("Test Application");
-        app.setOwner("John Doe");
-        app.setDescription("This is a test application");
-        String expected = "Application{id=1, name='Test Application', owner=John Doe, description='This is a test application'}";
-        assertEquals(expected, app.toString());
-    }
-  
 }
 
